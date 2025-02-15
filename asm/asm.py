@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import re
 import sys
@@ -124,4 +124,4 @@ for i, b in enumerate(mem):
     if str(b).startswith("%"):
         mem[i] = data_addr[b.lstrip("%")]
 
-print ' '.join(['%02x' % int(b) for b in mem])
+print(' '.join(['%02x' % int(b) for b in mem]))

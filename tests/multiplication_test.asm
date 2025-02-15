@@ -3,7 +3,7 @@
 start:
 
 	lda %r
-	ldi B 4
+	ldi B 15
 	add
 	sta %r
 
