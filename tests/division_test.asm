@@ -1,54 +1,70 @@
 .text
-ldi A 2
-push A
-ldi A 4
-sta %d0
-pop B
-startD0:
-lda %d0
-cmp
-jc %remainder0
-lda %q0
-inc
-sta %q0
-lda %d0
-sub
-sta %d0
-jmp %startD0
-remainder0:
-lda %q0
-push A
-ldi A 6
+ldi A 3
 push A
 ldi A 5
-sta %i0
+push A
+ldi A 4
+mov C A
 pop B
+ldi A 0
+push A
 start0:
-lda %r0
+pop A
 add
-sta %r0
-lda %i0
+push A
+mov A C
 dec
-sta %i0
+mov C A
 jnz %start0
-lda %r0
-sta %i1
+pop A
+push A
+ldi A 2
+push A
+ldi A 6
+mov C A
 pop B
+ldi A 0
+push A
 start1:
-lda %r1
+pop A
 add
-sta %r1
-lda %i1
+push A
+mov A C
 dec
-sta %i1
+mov C A
 jnz %start1
-lda %r1
+pop A
+mov C A
+pop B
+ldi A 0
+push A
+start2:
+pop A
+add
+push A
+mov A C
+dec
+mov C A
+jnz %start2
+pop A
+pop B
+push A
+ldi C 0
+startD0:
+pop A
+cmp
+push A
+jc %remainder0
+mov A C
+inc
+mov C A
+pop A
+sub
+push A
+jmp %startD0
+remainder0:
+pop A
+mov A C
 out 0
 hlt
 .data
-i1=0
-r1=0
-i0=0
-r0=0
-d0=0
-q0=0

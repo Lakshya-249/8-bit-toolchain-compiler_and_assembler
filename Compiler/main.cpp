@@ -54,22 +54,6 @@ class AstPrinter2 : public Visitor {
             instructions << "out 0\n";
             instructions << "hlt\n";
             instructions << ".data\n";
-            if(dataTag){
-                mulCount = mulCount == 0 ? 0 : mulCount-1;
-                while(mulCount >= 0){
-                    instructions << "i" << mulCount << "=" << 0 <<"\n";
-                    instructions << "r" << mulCount << "=" << 0 <<"\n";
-                    mulCount--;
-                }
-            }
-            if(divDataTag){
-                divCount = divCount == 0 ? 0 : divCount-1;
-                while(divCount >= 0){
-                    instructions << "d" << divCount << "=" << 0 <<"\n";
-                    instructions << "q" << divCount << "=" << 0 <<"\n";
-                    divCount--;
-                }
-            }
 
             return instructions.str();
         }
@@ -83,19 +67,23 @@ class AstPrinter2 : public Visitor {
                 pushToStack();
                 binary->left->accept(this);
                 
-                instructions << "sta %i" << mulCount << "\n";
+                // instructions << "sta %i" << mulCount << "\n";
+                moveBtwRegister('C', 'A');
                 popToRegisterB();
+                instructions << "ldi A 0\n";
+                pushToStack();
                 instructions << "start" << mulCount << ":\n";
-                instructions << "lda %r" << mulCount << "\n";
-                // binary->right->accept(this);
+                instructions << "pop A\n";
                 
                 instructions << "add\n";
-                instructions << "sta %r" << mulCount << "\n";
-                instructions << "lda %i" << mulCount << "\n";
+                instructions << "push A\n";
+                // instructions << "lda %i" << mulCount << "\n";
+                moveBtwRegister('A','C');
                 instructions << "dec\n";
-                instructions << "sta %i" << mulCount << "\n";
+                // instructions << "sta %i" << mulCount << "\n";
+                moveBtwRegister('C','A');
                 instructions << "jnz %start" << mulCount << "\n";
-                instructions << "lda %r" << mulCount << "\n";
+                instructions << "pop A\n";
                 mulCount++;
             }
             else if (opCode == "div"){
@@ -104,27 +92,37 @@ class AstPrinter2 : public Visitor {
                 binary->right->accept(this);
                 pushToStack();
                 binary->left->accept(this);
-                instructions << "sta %d" << divCount << "\n";
+                // instructions << "sta %d" << divCount << "\n";
                 popToRegisterB();
+                pushToStack();
+                instructions << "ldi C 0\n";
                 instructions << "startD" << divCount << ":\n";
-                instructions << "lda %d" << divCount << "\n";
+                instructions << "pop A\n";
+                // instructions << "lda %d" << divCount << "\n";
                 // instructions << "ldi B " << str << "\n";
                 // popToRegisterB();
                 instructions << "cmp\n";
+                pushToStack();
                 // instructions << "push B\n";
                 instructions << "jc %remainder" << divCount << "\n";
-                instructions << "lda %q" << divCount << "\n";
+                // instructions << "lda %q" << divCount << "\n";
+                moveBtwRegister('A','C');
                 instructions << "inc\n";
-                instructions << "sta %q" << divCount << "\n";
-                instructions << "lda %d" << divCount << "\n";
+                moveBtwRegister('C','A');
+                // instructions << "sta %q" << divCount << "\n";
+                instructions << "pop A\n";
+                // instructions << "lda %d" << divCount << "\n";
                 // instructions << "ldi B " << str << "\n";
                 // popToRegisterB();
                 instructions << "sub\n";
-                instructions << "sta %d" << divCount << "\n";
+                pushToStack();
+                // instructions << "sta %d" << divCount << "\n";
                 // instructions << "push B\n";
                 instructions << "jmp %startD" << divCount << "\n";
                 instructions << "remainder" << divCount << ":\n";
-                instructions << "lda %q" << divCount << "\n";
+                instructions << "pop A\n";
+                moveBtwRegister('A','C');
+                // instructions << "lda %q" << divCount << "\n";
                 // popToRegisterB();
                 divCount++;
             }
@@ -175,6 +173,10 @@ class AstPrinter2 : public Visitor {
     
         void popToRegisterB() {
             instructions << "pop B\n";
+        }
+
+        void moveBtwRegister(char X,char Y){
+            instructions << "mov " << X << " " << Y << "\n";
         }
     
         std::string getOpCode(const std::string& op) {
