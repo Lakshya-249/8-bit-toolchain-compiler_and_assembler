@@ -79,15 +79,16 @@ class AstPrinter2 : public Visitor {
             if(opCode == "mul"){
                 dataTag = true;
                 // binary->left->accept(this);
-                if (dynamic_cast<Binary*>(binary->left)) binary->left->accept(this);
-                else binary->right->accept(this);
+                binary->right->accept(this);
+                pushToStack();
+                binary->left->accept(this);
+                
                 instructions << "sta %i" << mulCount << "\n";
-
+                popToRegisterB();
                 instructions << "start" << mulCount << ":\n";
-                instructions << "mov B M %r" << mulCount << "\n";
+                instructions << "lda %r" << mulCount << "\n";
                 // binary->right->accept(this);
-                if (dynamic_cast<Binary*>(binary->left)) binary->right->accept(this);
-                else binary->left->accept(this);
+                
                 instructions << "add\n";
                 instructions << "sta %r" << mulCount << "\n";
                 instructions << "lda %i" << mulCount << "\n";
@@ -99,24 +100,32 @@ class AstPrinter2 : public Visitor {
             }
             else if (opCode == "div"){
                 divDataTag = true;
+                
+                binary->right->accept(this);
+                pushToStack();
                 binary->left->accept(this);
                 instructions << "sta %d" << divCount << "\n";
-                std::string str = binary->right->accept(this);
+                popToRegisterB();
                 instructions << "startD" << divCount << ":\n";
                 instructions << "lda %d" << divCount << "\n";
-                instructions << "ldi B " << str << "\n";
+                // instructions << "ldi B " << str << "\n";
+                // popToRegisterB();
                 instructions << "cmp\n";
+                // instructions << "push B\n";
                 instructions << "jc %remainder" << divCount << "\n";
                 instructions << "lda %q" << divCount << "\n";
                 instructions << "inc\n";
                 instructions << "sta %q" << divCount << "\n";
                 instructions << "lda %d" << divCount << "\n";
-                instructions << "ldi B " << str << "\n";
+                // instructions << "ldi B " << str << "\n";
+                // popToRegisterB();
                 instructions << "sub\n";
                 instructions << "sta %d" << divCount << "\n";
+                // instructions << "push B\n";
                 instructions << "jmp %startD" << divCount << "\n";
                 instructions << "remainder" << divCount << ":\n";
                 instructions << "lda %q" << divCount << "\n";
+                // popToRegisterB();
                 divCount++;
             }
             else{
@@ -143,7 +152,7 @@ class AstPrinter2 : public Visitor {
         }
 
         std::string visitGrouping(Grouping* grouping) override {
-            grouping->accept(this);
+            grouping->expression->accept(this);
             return "";
         }
     
