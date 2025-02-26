@@ -107,6 +107,8 @@ Expr* Parser::primary(){
 
     if (match({INTEGER, STRING})) return new Literal(previous().lexeme);
 
+    if (match({IDENTIFIER})) return new Variable(previous());
+
     if (match({LPAREN})){
         Expr* expr = expression();
         consume(RPAREN, "Expect ')' after expression");
@@ -116,15 +118,60 @@ Expr* Parser::primary(){
     return nullptr;
 }
 
-Expr* Parser::parse(){
-    try
-    {
-       return expression();
+Stmt* Parser::statement() {
+    if (match({PRINT})) return printStatement();
+    return exprStatement();
+}
+
+Stmt* Parser::printStatement() {
+    Expr* expr = expression();
+    consume(SEMICOLON, "Expect ';' after value");
+    return new Print(expr);
+}
+
+Stmt* Parser::exprStatement() {
+    Expr* expr = expression();
+    consume(SEMICOLON, "Expect ';' after expression");
+    return new Expression(expr);
+}
+
+Stmt* Parser::declaration() {
+    try{
+        if (match({INT})) return varDeclaration();
+        return statement();
     }
     catch(const Parser::ParseError &e)
     {
         std::cerr << "Oops an error occured!.." << '\n';
         return nullptr;
+    }
+    
+}
+
+Stmt* Parser::varDeclaration() {
+    Token name = consume(IDENTIFIER, "Expect variable name");
+    Expr* initializer = nullptr;
+    if (match({EQUAL})) {
+        initializer = expression();
+    }
+    consume(SEMICOLON, "Expect ';' after declaration");
+    return new Var(name, initializer);
+}
+
+std::vector<Stmt*> Parser::parse() {
+    try
+    {
+        std::vector<Stmt*> statements;
+        while (!isAtEnd())
+        {
+            statements.push_back(declaration());
+        }
+        return statements;
+    }
+    catch(const Parser::ParseError &e)
+    {
+        std::cerr << "Oops an error occured!.." << '\n';
+        return {};
     }
     
 }

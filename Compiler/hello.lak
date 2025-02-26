@@ -1,1 +1,6 @@
-6*2*(4*5)/3
+int x = 5*4;
+int y = 10;
+print y;
+print x;
+int z = x + y;
+print z;

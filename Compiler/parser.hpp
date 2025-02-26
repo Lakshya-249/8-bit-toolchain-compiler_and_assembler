@@ -2,7 +2,7 @@
 #define PARSER_HPP
 
 #include "lexer.hpp"
-#include "expr.hpp"
+#include "stmt.hpp"
 #include <exception>
 
 class Parser {
@@ -29,10 +29,15 @@ private:
     Expr* factor();
     Expr* unary();
     Expr* primary();
+    Stmt* statement();
+    Stmt* printStatement();
+    Stmt* exprStatement();
+    Stmt* declaration();
+    Stmt* varDeclaration();
 
 public:
     Parser(const std::vector<Token> &tokens): tokens(tokens) {};
-    Expr* parse();
+    std::vector<Stmt*> parse();
 };
 
 #endif

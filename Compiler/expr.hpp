@@ -3,29 +3,28 @@
 
 #include "token.h"
 #include <variant>
-
 using Object = std::variant<int, double, bool, std::string>;
-
 class Binary;
 class Grouping;
 class Literal;
 class Unary;
+class Variable;
 
-class Visitor{
+class ExprVisitor{
 public:
 	virtual std::string visitBinary(Binary* binary) = 0;
 	virtual std::string visitGrouping(Grouping* grouping) = 0;
 	virtual std::string visitLiteral(Literal* literal) = 0;
 	virtual std::string visitUnary(Unary* unary) = 0;
+	virtual std::string visitVariable(Variable* variable) = 0;
 
 };
 
 class Expr {
 public:
-    virtual std::string accept(Visitor* visitor) = 0;
+    virtual std::string accept(ExprVisitor* visitor) = 0;
     virtual ~Expr() = default;
 };
-
 
 
 class Binary : public Expr {
@@ -36,7 +35,7 @@ public:
 
     Binary(Expr* left, Token op, Expr* right);
 	void printfunc();
-	std::string accept(Visitor* visitor);
+	std::string accept(ExprVisitor* visitor);
 	~Binary() {}
 };
 
@@ -46,7 +45,7 @@ public:
 
     Grouping(Expr* expression);
 	void printfunc();
-	std::string accept(Visitor* visitor);
+	std::string accept(ExprVisitor* visitor);
 	~Grouping() {}
 };
 
@@ -56,7 +55,7 @@ public:
 
     Literal(Object value);
 	void printfunc();
-	std::string accept(Visitor* visitor);
+	std::string accept(ExprVisitor* visitor);
 	~Literal() {}
 };
 
@@ -67,8 +66,18 @@ public:
 
     Unary(Token op, Expr* right);
 	void printfunc();
-	std::string accept(Visitor* visitor);
+	std::string accept(ExprVisitor* visitor);
 	~Unary() {}
+};
+
+class Variable : public Expr {
+public:
+    Token name;
+
+    Variable(Token name);
+	void printfunc();
+	std::string accept(ExprVisitor* visitor);
+	~Variable() {}
 };
 
 #endif

@@ -1,5 +1,4 @@
-#include "expr.hpp" 
-#include "token.h"
+#include "expr.hpp"
 
 Binary::Binary(Expr* left, Token op, Expr* right) {
 	this->left = left;
@@ -10,7 +9,7 @@ Binary::Binary(Expr* left, Token op, Expr* right) {
 void Binary::printfunc() {
 	std::cout<< "Binary of class"<<std::endl;}
 
-std::string Binary::accept(Visitor* visitor) { return visitor->visitBinary(this) ;}
+std::string Binary::accept(ExprVisitor* visitor) { return visitor->visitBinary(this); }
 
 Grouping::Grouping(Expr* expression) {
 	this->expression = expression;
@@ -19,7 +18,7 @@ Grouping::Grouping(Expr* expression) {
 void Grouping::printfunc() {
 	std::cout<< "Grouping of class"<<std::endl;}
 
-std::string Grouping::accept(Visitor* visitor) { return visitor->visitGrouping(this) ;}
+std::string Grouping::accept(ExprVisitor* visitor) { return visitor->visitGrouping(this); }
 
 Literal::Literal(Object value) {
 	this->value = value;
@@ -28,7 +27,7 @@ Literal::Literal(Object value) {
 void Literal::printfunc() {
 	std::cout<< "Literal of class"<<std::endl;}
 
-std::string Literal::accept(Visitor* visitor) { return visitor->visitLiteral(this) ;}
+std::string Literal::accept(ExprVisitor* visitor) { return visitor->visitLiteral(this); }
 
 Unary::Unary(Token op, Expr* right) {
 	this->op = op;
@@ -38,4 +37,13 @@ Unary::Unary(Token op, Expr* right) {
 void Unary::printfunc() {
 	std::cout<< "Unary of class"<<std::endl;}
 
-std::string Unary::accept(Visitor* visitor) { return visitor->visitUnary(this) ;}
+std::string Unary::accept(ExprVisitor* visitor) { return visitor->visitUnary(this); }
+
+Variable::Variable(Token name) {
+	this->name = name;
+}
+
+void Variable::printfunc() {
+	std::cout<< "Variable of class"<<std::endl;}
+
+std::string Variable::accept(ExprVisitor* visitor) { return visitor->visitVariable(this); }
