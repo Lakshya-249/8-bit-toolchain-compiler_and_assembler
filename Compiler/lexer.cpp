@@ -4,7 +4,7 @@
 std::unordered_map<std::string, TokenType> Lexer::reservedWordsMap = {
     {"for", FOR}, {"or", OR}, {"xor", XOR}, {"if", IF}, {"else", ELSE},
     {"return", RETURN}, {"print", PRINT}, {"int", INT}, {"str", STR},
-    {"true", TRUE}, {"false", FALSE}, {"=", EQUAL}, {"==", EQUAL_EQUAL}, {"nil",NIL},
+    {"true", TRUE}, {"false", FALSE}, {"nil",NIL},
 };
 
 std::string Lexer::stripComment(const std::string& line) {
@@ -49,6 +49,14 @@ Token Lexer::checkLiteralOrKeyword(std::string lexeme, int line, int column) {
     return createToken(IDENTIFIER, lexeme, line, column);
 }
 
+bool Lexer::match(char c1, char c2,int &i) {
+    if (c1 == c2){
+        i++;
+        return true;
+    }
+    return false;
+};
+
 std::vector<Token> Lexer::tokenize(std::ifstream& file) {
     std::vector<Token> tokens;
     std::string line;
@@ -62,7 +70,7 @@ std::vector<Token> Lexer::tokenize(std::ifstream& file) {
         for (int i = 0; i < n; i++) {
             char c = line[i];
             
-            if (std::string(",;(){}+-*/><:").find(c) != std::string::npos) {
+            if (std::string(",;(){}+-*/><:=!").find(c) != std::string::npos) {
                 if (!currentToken.empty()) {
                     tokens.push_back(checkLiteralOrKeyword(currentToken, lineNumber, i));
                     currentToken.clear();
@@ -82,6 +90,10 @@ std::vector<Token> Lexer::tokenize(std::ifstream& file) {
                 case '>': tokens.push_back(createToken(GREATER,">",lineNumber,i)); break;
                 case '<': tokens.push_back(createToken(LESS,"<",lineNumber,i)); break;
                 case ':': tokens.push_back(createToken(COLON,":",lineNumber,i)); break;
+                case '=': tokens.push_back(match('=', line[i+1], i) ? createToken(EQUAL_EQUAL,"==",lineNumber,i) : 
+                        createToken(EQUAL,"=",lineNumber,i)); break;
+                case '!': tokens.push_back(match('=', line[i+1], i) ? createToken(NOT_EQUAL,"!=",lineNumber,i) : 
+                        createToken(NOT,"!",lineNumber,i)); break;
                 default:
                     tokens.push_back(createToken(static_cast<TokenType>(c), std::string(1, c), lineNumber, i));
                     break;

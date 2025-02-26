@@ -4,6 +4,7 @@
 #include "lexer.hpp"
 #include "stmt.hpp"
 #include <exception>
+#include <typeinfo>
 
 class Parser {
 private:
@@ -23,6 +24,7 @@ private:
     Token peek();
     Token previous();
     Expr* expression();
+    Expr* assignment();
     Expr* equality();
     Expr* comparision();
     Expr* term();

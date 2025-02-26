@@ -4,6 +4,7 @@
 #include "token.h"
 #include <variant>
 using Object = std::variant<int, double, bool, std::string>;
+class Assign;
 class Binary;
 class Grouping;
 class Literal;
@@ -12,6 +13,7 @@ class Variable;
 
 class ExprVisitor{
 public:
+	virtual std::string visitAssign(Assign* assign) = 0;
 	virtual std::string visitBinary(Binary* binary) = 0;
 	virtual std::string visitGrouping(Grouping* grouping) = 0;
 	virtual std::string visitLiteral(Literal* literal) = 0;
@@ -26,6 +28,17 @@ public:
     virtual ~Expr() = default;
 };
 
+
+class Assign : public Expr {
+public:
+    Token name;
+    Expr* value;
+
+    Assign(Token name, Expr* value);
+	void printfunc();
+	std::string accept(ExprVisitor* visitor);
+	~Assign() {}
+};
 
 class Binary : public Expr {
 public:
@@ -80,4 +93,4 @@ public:
 	~Variable() {}
 };
 
-#endif
+#endif // EXPR_HPP

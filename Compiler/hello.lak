@@ -1,6 +1,8 @@
-int x = 5*4;
+int x = 5;
 int y = 10;
 print y;
 print x;
-int z = x + y;
-print z;
+int z = x + y * x;
+x +=19;
+print z/2;
+print x;

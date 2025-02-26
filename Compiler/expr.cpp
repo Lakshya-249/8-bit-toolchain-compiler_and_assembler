@@ -1,5 +1,15 @@
 #include "expr.hpp"
 
+Assign::Assign(Token name, Expr* value) {
+	this->name = name;
+	this->value = value;
+}
+
+void Assign::printfunc() {
+	std::cout<< "Assign of class"<<std::endl;}
+
+std::string Assign::accept(ExprVisitor* visitor) { return visitor->visitAssign(this); }
+
 Binary::Binary(Expr* left, Token op, Expr* right) {
 	this->left = left;
 	this->op = op;

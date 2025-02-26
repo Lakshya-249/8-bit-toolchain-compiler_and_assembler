@@ -26,6 +26,7 @@ class Compiler: public ExprVisitor, public StmtVisitor{
         void multiply(Binary* binary);
         void divide(Binary* binary, std::string opCode);
         void evalAddSub(Binary* binary, std::string opCode);
+        std::string visitAssign(Assign* assign) override;
         std::string visitBinary(Binary* binary) override;
         std::string visitGrouping(Grouping* grouping) override;
         std::string visitLiteral(Literal* literal) override;

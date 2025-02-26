@@ -47,6 +47,7 @@ def generate_ast(filename, ast_nodes):
 
 # Example usage
 ast_nodes = [
+    ("Assign", "Token name, Expr* value"),
     ("Binary", "Expr* left, Token op, Expr* right"),
     ("Grouping", "Expr* expression"),
     ("Literal", "Object value"),

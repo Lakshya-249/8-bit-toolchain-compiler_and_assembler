@@ -126,6 +126,13 @@ std::string Compiler::visitVariable(Variable* variable) {
     return "";
 }
 
+std::string Compiler::visitAssign(Assign* assign) {
+    std::string value = evaluate(assign->value);
+    env.assign(assign->name, value);
+    moveRegisterToMemory('A', assign->name.lexeme);
+    return "";
+}
+
 std::string Compiler::visitExpression(Expression* expression) {
     evaluate(expression->expression);
     return "";

@@ -19,6 +19,7 @@ public:
     static Token createToken(TokenType type, std::string lexeme, int line, int column);
     static Token checkLiteralOrKeyword(std::string lexeme, int line, int column);
     static std::vector<Token> tokenize(std::ifstream& file);
+    static bool match(char c1, char c2,int &i);
 };
 
 #endif

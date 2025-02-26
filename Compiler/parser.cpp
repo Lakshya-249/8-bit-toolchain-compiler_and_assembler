@@ -47,8 +47,23 @@ bool Parser::match(std::initializer_list<TokenType> tokentypes){
     return false;
 }
 
-Expr* Parser::expression(){
-    return equality();
+Expr* Parser::expression() {
+    return assignment();
+}
+
+Expr* Parser::assignment() {
+    Expr* expr = equality();
+    if(match({EQUAL})){
+        Token equals = previous();
+        Expr* value = assignment();
+        if(typeid(*expr) == typeid(Variable)){
+            Token name = ((Variable*)expr)->name;
+            return new Assign(name, value);
+        }
+        error(equals, "Invalid assignment target");
+        return nullptr;
+    }
+    return expr;
 }
 
 Expr* Parser::equality() {
@@ -63,7 +78,7 @@ Expr* Parser::equality() {
 
 Expr* Parser::comparision(){
     Expr* expr = term();
-    while(match({LESS, GREATER})){
+    while (match({LESS, GREATER})){
         Token op = previous();
         Expr* right = term();
         expr = new Binary(expr, op, right);
@@ -73,7 +88,7 @@ Expr* Parser::comparision(){
 
 Expr* Parser::term(){
     Expr* expr = factor();
-    while(match({PLUS, MINUS})){
+    while (match({PLUS, MINUS})){
         Token op = previous();
         Expr* right = factor();
         expr = new Binary(expr, op, right);
@@ -114,7 +129,7 @@ Expr* Parser::primary(){
         consume(RPAREN, "Expect ')' after expression");
         return expr;
     }
-    error(peek(), "Expect expression.");
+    // error(peek(), "Expect expression.");
     return nullptr;
 }
 
