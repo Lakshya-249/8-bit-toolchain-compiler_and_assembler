@@ -122,6 +122,7 @@ std::string Compiler::visitUnary(Unary* unary) {
 }
 
 std::string Compiler::visitVariable(Variable* variable) {
+    env.get(variable->name);
     moveMemoryToRegister('A', variable->name.lexeme);
     return "";
 }

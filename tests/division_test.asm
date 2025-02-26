@@ -28,7 +28,7 @@ mov A M %x
 pop B
 add
 mov M A %z
-ldi A 19
+ldi A 29
 mov M A %x
 ldi A 2
 push A
