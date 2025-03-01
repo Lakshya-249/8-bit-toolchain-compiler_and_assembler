@@ -8,6 +8,7 @@ class Assign;
 class Binary;
 class Grouping;
 class Literal;
+class Logical;
 class Unary;
 class Variable;
 
@@ -17,6 +18,7 @@ public:
 	virtual std::string visitBinary(Binary* binary) = 0;
 	virtual std::string visitGrouping(Grouping* grouping) = 0;
 	virtual std::string visitLiteral(Literal* literal) = 0;
+	virtual std::string visitLogical(Logical* logical) = 0;
 	virtual std::string visitUnary(Unary* unary) = 0;
 	virtual std::string visitVariable(Variable* variable) = 0;
 
@@ -72,6 +74,18 @@ public:
 	~Literal() {}
 };
 
+class Logical : public Expr {
+public:
+    Expr* left;
+    Token op;
+    Expr* right;
+
+    Logical(Expr* left, Token op, Expr* right);
+	void printfunc();
+	std::string accept(ExprVisitor* visitor);
+	~Logical() {}
+};
+
 class Unary : public Expr {
 public:
     Token op;
@@ -93,4 +107,4 @@ public:
 	~Variable() {}
 };
 
-#endif // EXPR_HPP
+#endif

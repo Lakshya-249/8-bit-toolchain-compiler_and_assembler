@@ -15,7 +15,8 @@ enum TokenType {
     // ASSIGNMENT oprator token
     EQUAL, EQUAL_EQUAL,
     NOT, NOT_EQUAL,
-    GREATER, LESS,
+    GREATER, LESS, 
+    GREATER_EQUAL, LESS_EQUAL,
 
     // ARITHMETIC operator token
     PLUS, MINUS,
@@ -25,7 +26,7 @@ enum TokenType {
     IDENTIFIER,STRING,INTEGER,
 
     // KEYWORD token
-    AND, OR, XOR, FOR,WHILE,
+    AND, OR, XOR, FOR, WHILE,
     IF, ELSE, RETURN,PRINT,INT,STR,
     TRUE, FALSE, EOFL
 };

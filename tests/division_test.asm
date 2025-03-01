@@ -1,15 +1,41 @@
 .text
 ldi A 5
 mov M A %x
+ldi A 19
+mov M A %y
 ldi A 10
+mov M A %x_local1
+mov A M %y
+push A
+mov A M %x_local1
+pop B
+add
+out 0
+ldi A 60
+mov M A %y
+ldi A 37
+mov M A %x_local1
+mov A M %y
+push A
+mov A M %x_local1
+pop B
+add
+mov M A %z_local1
+ldi A 10
+mov M A %x_local2
+ldi A 5
+mov M A %x_local2
+mov A M %x_local2
+push A
+mov A M %z_local1
+pop B
+add
+out 0
+ldi A 19
 mov M A %y
 mov A M %y
-out 0
-mov A M %x
-out 0
-mov A M %x
 push A
-mov A M %y
+mov A M %x
 mov C A
 pop B
 ldi A 0
@@ -23,39 +49,11 @@ dec
 mov C A
 jnz %startM0
 pop A
-push A
-mov A M %x
-pop B
-add
-mov M A %z
-ldi A 29
-mov M A %x
-ldi A 2
-push A
-mov A M %z
-pop B
-push A
-ldi C 0
-startD0:
-pop A
-cmp
-push A
-jc %remainder0
-mov A C
-inc
-mov C A
-pop A
-sub
-push A
-jmp %startD0
-remainder0:
-pop A
-mov A C
-out 0
-mov A M %x
 out 0
 hlt
 .data
-z=0
 y=0
 x=0
+x_local1=0
+z_local1=0
+x_local2=0

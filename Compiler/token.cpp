@@ -41,6 +41,8 @@ std::string tokenTypeToString(TokenType type) {
         case TRUE: return "TRUE";
         case FALSE: return "FALSE";
         case EOFL: return "EOFL";
+        case GREATER_EQUAL: return "GREATER_EQUAL";
+        case LESS_EQUAL: return "LESS_EQUAL";
         default: return "UNKNOWN";
     }
 }

@@ -1,15 +1,28 @@
 #include "environment.hpp"
 
-
-void Environment::define(Token &token, const std::string value) {
-    values[token.lexeme] = value;
+Environment::Environment() {
+    this->enclosing = nullptr;
+    this->depth = 0;
 }
 
-void Environment::get(Token &token) {
+Environment::Environment(Environment* enclosing) {
+    this->enclosing = enclosing;
+    this->depth = enclosing->depth + 1;
+}
+
+void Environment::define(Token &token, const std::string value) {
+    std::string scopename = (depth>0) ? token.lexeme + "_local" + std::to_string(depth) : token.lexeme;
+    values[scopename] = value;
+}
+
+std::string Environment::get(Token &token) {
     try{
-        if (values.find(token.lexeme) == values.end()) {
-            throw std::runtime_error("Undefined variable name " + token.lexeme + ".");
+        std::string scopename = (depth>0) ? token.lexeme + "_local" + std::to_string(depth) : token.lexeme;
+        if (values.find(scopename) != values.end()) {
+            return scopename;
         }
+        if (enclosing != nullptr) return enclosing->get(token);
+        throw std::runtime_error("Undefined variable name " + token.lexeme + ".");
     }
     catch(const std::runtime_error& e){
         std::cerr << e.what() << '\n';
@@ -17,12 +30,16 @@ void Environment::get(Token &token) {
     }   
 }
 
-void Environment::assign(Token &token, const std::string value) {
+std::string Environment::assign(Token &token, const std::string value) {
     try{
-        std::string name = token.lexeme;
-        if(values.find(name) == values.end()) {
-            throw std::runtime_error("Undefined variable name " + name + ".");
+        std::string scopename = (depth>0) ? token.lexeme + "_local" + std::to_string(depth) : token.lexeme;
+        if (values.find(scopename) != values.end()) {
+            return scopename;
         }
+        if (enclosing != nullptr) {
+            return enclosing->assign(token, value);
+        }
+        throw std::runtime_error("Undefined variable name " + scopename + ".");
     }
     catch(const std::runtime_error& e){
         std::cerr << e.what() << '\n';

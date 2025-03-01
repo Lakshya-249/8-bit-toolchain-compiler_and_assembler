@@ -51,14 +51,18 @@ ast_nodes = [
     ("Binary", "Expr* left, Token op, Expr* right"),
     ("Grouping", "Expr* expression"),
     ("Literal", "Object value"),
+    ("Logical", "Expr* left, Token op, Expr* right"),
     ("Unary", "Token op, Expr* right"),
     ("Variable", "Token name")
 ]
 
 stm_nodes = [
-    ("Expression","Expr* expression"),
-    ("Print","Expr* expression"),
+    ("Block", "std::vector<Stmt*> statements"),
+    ("Expression", "Expr* expression"),
+    ("IfStmt", "Expr* condition, Stmt* thenBranch, Stmt* elseBranch"),
+    ("Print", "Expr* expression"),
     ("Var", "Token name, Expr* initializer"),
+    ("WhileStmt", "Expr* condition, Stmt* body"),
 ]
 
 generate_ast("expr", ast_nodes)

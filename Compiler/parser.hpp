@@ -12,7 +12,7 @@ private:
     int current = 0;
     std::vector<Token>tokens;
 
-    bool check(TokenType &type);
+    bool check(TokenType type);
     bool match(std::initializer_list<TokenType> tokentypes);
     Token consume(TokenType type,std::string message);
     [[noreturn]] void error(Token token,std::string message){
@@ -31,8 +31,14 @@ private:
     Expr* factor();
     Expr* unary();
     Expr* primary();
+    Expr* orExpr();
+    Expr* andExpr();
+    std::vector<Stmt*> block();
     Stmt* statement();
+    Stmt* forStatement();
+    Stmt* ifStatement();
     Stmt* printStatement();
+    Stmt* whileStatement();
     Stmt* exprStatement();
     Stmt* declaration();
     Stmt* varDeclaration();

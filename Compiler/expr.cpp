@@ -39,6 +39,17 @@ void Literal::printfunc() {
 
 std::string Literal::accept(ExprVisitor* visitor) { return visitor->visitLiteral(this); }
 
+Logical::Logical(Expr* left, Token op, Expr* right) {
+	this->left = left;
+	this->op = op;
+	this->right = right;
+}
+
+void Logical::printfunc() {
+	std::cout<< "Logical of class"<<std::endl;}
+
+std::string Logical::accept(ExprVisitor* visitor) { return visitor->visitLogical(this); }
+
 Unary::Unary(Token op, Expr* right) {
 	this->op = op;
 	this->right = right;

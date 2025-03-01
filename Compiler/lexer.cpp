@@ -4,7 +4,7 @@
 std::unordered_map<std::string, TokenType> Lexer::reservedWordsMap = {
     {"for", FOR}, {"or", OR}, {"xor", XOR}, {"if", IF}, {"else", ELSE},
     {"return", RETURN}, {"print", PRINT}, {"int", INT}, {"str", STR},
-    {"true", TRUE}, {"false", FALSE}, {"nil",NIL},
+    {"true", TRUE}, {"false", FALSE}, {"nil",NIL}, {"and", AND}, {"while", WHILE}
 };
 
 std::string Lexer::stripComment(const std::string& line) {
@@ -23,6 +23,7 @@ bool Lexer::isInteger(const std::string& str) {
 
 void Lexer::report(int line, std::string where, std::string message) {
     std::cerr << "[line " << line << "] Error: " << where << ": " << message << std::endl;
+    std::exit(1);
 }
 
 void Lexer::error(Token token,std::string message){
@@ -87,8 +88,10 @@ std::vector<Token> Lexer::tokenize(std::ifstream& file) {
                 case '-': tokens.push_back(createToken(MINUS,"-",lineNumber,i)); break;
                 case '*': tokens.push_back(createToken(STAR,"*",lineNumber,i)); break;
                 case '/': tokens.push_back(createToken(SLASH,"/",lineNumber,i)); break;
-                case '>': tokens.push_back(createToken(GREATER,">",lineNumber,i)); break;
-                case '<': tokens.push_back(createToken(LESS,"<",lineNumber,i)); break;
+                case '>': tokens.push_back(match('=', line[i+1], i) ? createToken(GREATER_EQUAL,">=",lineNumber,i) : 
+                        createToken(GREATER,">",lineNumber,i)); break;
+                case '<': tokens.push_back(match('=', line[i+1], i) ? createToken(LESS_EQUAL,"<=",lineNumber,i) : 
+                        createToken(LESS,"<",lineNumber,i)); break;
                 case ':': tokens.push_back(createToken(COLON,":",lineNumber,i)); break;
                 case '=': tokens.push_back(match('=', line[i+1], i) ? createToken(EQUAL_EQUAL,"==",lineNumber,i) : 
                         createToken(EQUAL,"=",lineNumber,i)); break;
