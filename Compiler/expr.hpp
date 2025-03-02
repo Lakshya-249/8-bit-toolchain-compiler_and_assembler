@@ -3,9 +3,12 @@
 
 #include "token.h"
 #include <variant>
+#include <vector>
+
 using Object = std::variant<int, double, bool, std::string>;
 class Assign;
 class Binary;
+class Call;
 class Grouping;
 class Literal;
 class Logical;
@@ -16,6 +19,7 @@ class ExprVisitor{
 public:
 	virtual std::string visitAssign(Assign* assign) = 0;
 	virtual std::string visitBinary(Binary* binary) = 0;
+	virtual std::string visitCall(Call* call) = 0;
 	virtual std::string visitGrouping(Grouping* grouping) = 0;
 	virtual std::string visitLiteral(Literal* literal) = 0;
 	virtual std::string visitLogical(Logical* logical) = 0;
@@ -52,6 +56,18 @@ public:
 	void printfunc();
 	std::string accept(ExprVisitor* visitor);
 	~Binary() {}
+};
+
+class Call : public Expr {
+public:
+    Expr* callee;
+    Token op;
+    std::vector<Expr*> arguments;
+
+    Call(Expr* callee, Token op, std::vector<Expr*> arguments);
+	void printfunc();
+	std::string accept(ExprVisitor* visitor);
+	~Call() {}
 };
 
 class Grouping : public Expr {

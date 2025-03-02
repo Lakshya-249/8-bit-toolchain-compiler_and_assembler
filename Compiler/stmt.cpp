@@ -18,6 +18,17 @@ void Expression::printfunc() {
 
 std::string Expression::accept(StmtVisitor* visitor) { return visitor->visitExpression(this); }
 
+Function::Function(Token name, std::vector<Token> params, std::vector<Stmt*> body) {
+	this->name = name;
+	this->params = params;
+	this->body = body;
+}
+
+void Function::printfunc() {
+	std::cout<< "Function of class"<<std::endl;}
+
+std::string Function::accept(StmtVisitor* visitor) { return visitor->visitFunction(this); }
+
 IfStmt::IfStmt(Expr* condition, Stmt* thenBranch, Stmt* elseBranch) {
 	this->condition = condition;
 	this->thenBranch = thenBranch;
@@ -37,6 +48,16 @@ void Print::printfunc() {
 	std::cout<< "Print of class"<<std::endl;}
 
 std::string Print::accept(StmtVisitor* visitor) { return visitor->visitPrint(this); }
+
+ReturnStmt::ReturnStmt(Token name, Expr* value) {
+	this->name = name;
+	this->value = value;
+}
+
+void ReturnStmt::printfunc() {
+	std::cout<< "ReturnStmt of class"<<std::endl;}
+
+std::string ReturnStmt::accept(StmtVisitor* visitor) { return visitor->visitReturnStmt(this); }
 
 Var::Var(Token name, Expr* initializer) {
 	this->name = name;

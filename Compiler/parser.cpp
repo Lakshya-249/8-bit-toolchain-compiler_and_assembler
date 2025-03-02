@@ -125,16 +125,40 @@ Expr* Parser::factor(){
     return expr;
 }
 
-Expr* Parser::unary(){
+Expr* Parser::unary() {
     if (match({NOT_EQUAL,MINUS,PLUS})){
         Token op = previous();
         Expr* right = unary();
         return new Unary(op, right);
     }
-    return primary();
+    return call();
 }
 
-Expr* Parser::primary(){
+Expr* Parser::call() {
+    Expr* expr = primary();
+    while (true) {
+        if (match({LPAREN})){
+            expr = finishCall(expr);
+        }else break;
+    }
+    return expr;
+}
+
+Expr* Parser::finishCall(Expr* callee) {
+    std::vector<Expr*> arguments;
+    if (!check(RPAREN)) {
+        do {
+            if (arguments.size() > 50) {
+                error(peek(), "Cannot have more than 50 arguments.");
+            }
+            arguments.push_back(expression());
+        } while (match({COMMA}));
+    }
+    Token paren = consume(RPAREN, "Expect ')' after arguments");
+    return new Call(callee, paren, arguments);
+}
+
+Expr* Parser::primary() {
     if (match({FALSE})) return new Literal("0");
     if (match({TRUE})) return new Literal("1");
     if (match({NIL})) return new Literal("0");
@@ -155,10 +179,22 @@ Expr* Parser::primary(){
 Stmt* Parser::statement() {
     if (match({FOR})) return forStatement();
     if (match({IF})) return ifStatement();
+    if (match({DEF})) return function("function");
     if (match({PRINT})) return printStatement();
+    if (match({RETURN})) return returnStatement();
     if (match({WHILE})) return whileStatement();
     if (match({LBRACE})) return new Block(block());
     return exprStatement();
+}
+
+Stmt* Parser::returnStatement() {
+    Token name = previous();
+    Expr* val = nullptr;
+    if (!match({SEMICOLON})) {
+        val = expression();
+    }
+    consume(SEMICOLON, "Expect ';' after return value");
+    return new ReturnStmt(name, val);
 }
 
 Stmt* Parser::ifStatement() {
@@ -171,6 +207,24 @@ Stmt* Parser::ifStatement() {
         elseBranch = statement();
     }
     return new IfStmt(condition, thenBranch, elseBranch);
+}
+
+Stmt* Parser::function(std::string kind) {
+    Token name = consume(IDENTIFIER, "Expect function name");
+    consume(LPAREN, "Expect '(' after "+ kind + " name");
+    std::vector<Token> parameters;
+    if (!check(RPAREN)) {
+        do {
+            if (parameters.size() > 50) {
+                error(peek(), "Cannot have more than 50 parameters.");
+            }
+            parameters.push_back(consume(IDENTIFIER, "Expect parameter name"));
+        } while (match({COMMA}));
+    }
+    consume(RPAREN, "Expect ')' after parameters");
+    consume(LBRACE, "Expect '{' before function body");
+    std::vector<Stmt*> body = block();
+    return new Function(name, parameters, body);
 }
 
 std::vector<Stmt*> Parser::block() {

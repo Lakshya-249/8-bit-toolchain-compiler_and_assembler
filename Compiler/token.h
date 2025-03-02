@@ -26,8 +26,8 @@ enum TokenType {
     IDENTIFIER,STRING,INTEGER,
 
     // KEYWORD token
-    AND, OR, XOR, FOR, WHILE,
-    IF, ELSE, RETURN,PRINT,INT,STR,
+    AND, OR, XOR, FOR, WHILE, DEF,
+    IF, ELSE, RETURN, PRINT, INT, STR,
     TRUE, FALSE, EOFL
 };
 

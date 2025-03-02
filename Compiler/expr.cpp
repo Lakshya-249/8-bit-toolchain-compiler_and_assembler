@@ -21,6 +21,17 @@ void Binary::printfunc() {
 
 std::string Binary::accept(ExprVisitor* visitor) { return visitor->visitBinary(this); }
 
+Call::Call(Expr* callee, Token op, std::vector<Expr*> arguments) {
+	this->callee = callee;
+	this->op = op;
+	this->arguments = arguments;
+}
+
+void Call::printfunc() {
+	std::cout<< "Call of class"<<std::endl;}
+
+std::string Call::accept(ExprVisitor* visitor) { return visitor->visitCall(this); }
+
 Grouping::Grouping(Expr* expression) {
 	this->expression = expression;
 }

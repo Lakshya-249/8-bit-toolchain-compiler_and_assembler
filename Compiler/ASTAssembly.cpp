@@ -161,7 +161,7 @@ std::string Compiler::visitUnary(Unary* unary) {
 std::string Compiler::visitVariable(Variable* variable) {
     std::string address = env->get(variable->name);
     moveMemoryToRegister('A', address);
-    return "";
+    return address;
 }
 
 std::string Compiler::visitAssign(Assign* assign) {
@@ -190,6 +190,33 @@ std::string Compiler::visitLogical(Logical* logical) {
 std::string Compiler::visitBlock(Block* block) {
     executeBlock(block->statements, new Environment(env));
     return "";
+}
+
+std::string Compiler::visitCall(Call* call) {
+try{
+    std::string callee = evaluate(call->callee);
+    ASTCallable* callb = env->getFunction(callee);
+    // std::vector<std::string>arguments; 
+    // for (auto &arg : call->arguments) {
+    //     arguments.push_back(evaluate(arg));
+    // }
+    if(typeid(*callb) != typeid(ASTFunction)){
+        throw std::runtime_error("Can only call functions and classes.");
+        
+    }
+    if (call->arguments.size() > callb->arity() || call->arguments.size() < callb->arity()){
+        throw std::runtime_error("Too many arguments for function.");
+        
+    }
+    // std::cout<<"Checker value:" <<callee <<std::endl;
+    callb->call(this, call->arguments);
+    return "";
+}
+catch(std::runtime_error& e){
+    std::cerr << "Error: " << e.what() << std::endl;
+    // return "";
+    std::exit(1);
+}
 }
 
 void Compiler::executeBlock(std::vector<Stmt*> statements, Environment* environment) {
@@ -247,6 +274,15 @@ std::string Compiler::visitWhileStmt(WhileStmt* whilestmt) {
     return "";
 }
 
+std::string Compiler::visitReturnStmt(ReturnStmt* returnstmt) {
+    Expr* expr = nullptr;
+    if (returnstmt->value!= nullptr) {
+        expr = returnstmt->value;
+    }
+    throw Return(expr);
+    return "";
+}
+
 std::string Compiler::visitVar(Var* var) {
     std::string value = "0";
     std::string scopename = (env->depth > 0) ? var->name.lexeme + "_local" + std::to_string(env->depth) : var->name.lexeme;
@@ -255,6 +291,13 @@ std::string Compiler::visitVar(Var* var) {
         moveRegisterToMemory('A', scopename);
     }
     env->define(var->name, value);
+    return "";
+}
+
+std::string Compiler::visitFunction(Function* stmt) {
+    ASTFunction* function = new ASTFunction(stmt);
+    env->define(stmt->name, "0");
+    env->defineFunctions(stmt->name, function);
     return "";
 }
 
@@ -272,27 +315,84 @@ std::string Compiler::compile(std::vector<Stmt*> &statements){
     // instructions << "out 0\n";
     instructions << "hlt\n";
     instructions << ".data\n";
+    std::unordered_map<std::string, std::string> processedVars;
     for (auto &var : env->values) {
-        instructions << var.first << "=" << var.second << "\n";
+        if (processedVars.find(var.first) == processedVars.end()) {
+            instructions << var.first << "=" << var.second << "\n";
+            processedVars[var.first] = var.second;
+        }
     }
-    std::unordered_map<std::string, std::string>mpp;
-    for (auto &it: scopeStack) {
-        for (auto &var : it->values){
-            if(mpp.find(var.first) == mpp.end()){
+
+    for (auto &var : global->values){
+        if (processedVars.find(var.first) == processedVars.end()) {
+            instructions << var.first << "=" << var.second << "\n";
+            processedVars[var.first] = var.second;
+        }
+    }
+    
+    // Then process all environments in the scope stack
+    for (auto &scopeEnv : scopeStack) {
+        for (auto &var : scopeEnv->values) {
+            if (processedVars.find(var.first) == processedVars.end()) {
                 instructions << var.first << "=" << var.second << "\n";
+                processedVars[var.first] = var.second;
             }
-            mpp[var.first] = var.second;
         }
     }
     return instructions.str();
 }
 
+ASTFunction::ASTFunction(Function* declaration) {
+    this->declaration = declaration;
+}
+
+std::string ASTFunction::call(Compiler* compiler, std::vector<Expr*> arguments) {
+    Environment* environment = new Environment(compiler->global);
+    Environment* prev = compiler->env;
+    for (size_t i = 0; i < arguments.size(); i++) {
+        environment->define(declaration->params[i], "0");
+    }
+    for (size_t i = 0; i < arguments.size(); i++) {
+        compiler->evaluate(arguments[i]);
+        compiler->moveRegisterToMemory('A', environment->get(declaration->params[i]));
+    }
+    // std::cout<<"Checker value:" <<environment->get(declaration->name) <<std::endl;
+    // compiler->funcStatements.push_back({declaration->body, environment});
+    try
+    {
+        compiler->executeBlock(declaration->body, environment);
+    }
+    catch(const Return& returnException)
+    {
+        compiler->evaluate(returnException.value);
+        compiler->env = prev;
+        return "";
+    }
+    compiler->loadDataRegister('A', "0");
+    
+    return "";
+}
+
+int ASTFunction::arity() {
+    return declaration->params.size();
+}
+
 Compiler::~Compiler() {
-    for (auto &it: scopeStack) {
-        delete it;
+    for (auto it = scopeStack.begin(); it != scopeStack.end(); ++it) {
+        if (*it != env && *it != global) { // Assuming you have a global environment
+            delete *it;
+        }
     }
-    for (auto &it: ptrstatements){
-        delete it;
+    scopeStack.clear();
+    
+    if (env) {
+        delete env;
     }
-    delete env;
+    
+    // for (auto &it : ptrstatements) {
+    //     if (it) {
+    //         delete it;
+    //         it = nullptr;
+    //     }
+    // }
 }

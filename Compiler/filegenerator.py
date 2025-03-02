@@ -49,6 +49,7 @@ def generate_ast(filename, ast_nodes):
 ast_nodes = [
     ("Assign", "Token name, Expr* value"),
     ("Binary", "Expr* left, Token op, Expr* right"),
+    ("Call", "Expr* callee, Token op, std::vector<Expr*> arguments"),
     ("Grouping", "Expr* expression"),
     ("Literal", "Object value"),
     ("Logical", "Expr* left, Token op, Expr* right"),
@@ -59,8 +60,10 @@ ast_nodes = [
 stm_nodes = [
     ("Block", "std::vector<Stmt*> statements"),
     ("Expression", "Expr* expression"),
+    ("Function", "Token name, std::vector<Token> params, std::vector<Stmt*> body"),
     ("IfStmt", "Expr* condition, Stmt* thenBranch, Stmt* elseBranch"),
     ("Print", "Expr* expression"),
+    ("ReturnStmt", "Token name, Expr* value"),
     ("Var", "Token name, Expr* initializer"),
     ("WhileStmt", "Expr* condition, Stmt* body"),
 ]

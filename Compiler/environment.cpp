@@ -15,6 +15,11 @@ void Environment::define(Token &token, const std::string value) {
     values[scopename] = value;
 }
 
+void Environment::defineFunctions(Token& token, ASTCallable* callable) {
+    std::string scopename = (depth>0) ? token.lexeme + "_local" + std::to_string(depth) : token.lexeme + "_def";
+    funcValues[scopename] = callable;
+}
+
 std::string Environment::get(Token &token) {
     try{
         std::string scopename = (depth>0) ? token.lexeme + "_local" + std::to_string(depth) : token.lexeme;
@@ -26,8 +31,25 @@ std::string Environment::get(Token &token) {
     }
     catch(const std::runtime_error& e){
         std::cerr << e.what() << '\n';
+        // return "";
         std::exit(1);
     }   
+}
+
+ASTCallable* Environment::getFunction(std::string token) {
+    try{
+        std::string scopename = token + "_def";
+        if (funcValues.find(scopename)!= funcValues.end()) {
+            return funcValues[scopename];
+        }
+        if (enclosing!= nullptr) return enclosing->getFunction(token);
+        throw std::runtime_error("Undefined function name " + token + ".");
+    }
+    catch(const std::runtime_error& e){
+        std::cerr << e.what() << '\n';
+        // return nullptr;
+        std::exit(1);
+    } 
 }
 
 std::string Environment::assign(Token &token, const std::string value) {
@@ -43,6 +65,7 @@ std::string Environment::assign(Token &token, const std::string value) {
     }
     catch(const std::runtime_error& e){
         std::cerr << e.what() << '\n';
+        // return "";
         std::exit(1);
     }
 }

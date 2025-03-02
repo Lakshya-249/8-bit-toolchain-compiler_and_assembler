@@ -4,13 +4,14 @@
 #include "token.h"
 #include <variant>
 #include "expr.hpp"
-#include <vector> 
 
 using Object = std::variant<int, double, bool, std::string>;
 class Block;
 class Expression;
+class Function;
 class IfStmt;
 class Print;
+class ReturnStmt;
 class Var;
 class WhileStmt;
 
@@ -18,8 +19,10 @@ class StmtVisitor{
 public:
 	virtual std::string visitBlock(Block* block) = 0;
 	virtual std::string visitExpression(Expression* expression) = 0;
+	virtual std::string visitFunction(Function* function) = 0;
 	virtual std::string visitIfStmt(IfStmt* ifstmt) = 0;
 	virtual std::string visitPrint(Print* print) = 0;
+	virtual std::string visitReturnStmt(ReturnStmt* returnstmt) = 0;
 	virtual std::string visitVar(Var* var) = 0;
 	virtual std::string visitWhileStmt(WhileStmt* whilestmt) = 0;
 
@@ -52,6 +55,18 @@ public:
 	~Expression() {}
 };
 
+class Function : public Stmt {
+public:
+    Token name;
+    std::vector<Token> params;
+    std::vector<Stmt*> body;
+
+    Function(Token name, std::vector<Token> params, std::vector<Stmt*> body);
+	void printfunc();
+	std::string accept(StmtVisitor* visitor);
+	~Function() {}
+};
+
 class IfStmt : public Stmt {
 public:
     Expr* condition;
@@ -72,6 +87,17 @@ public:
 	void printfunc();
 	std::string accept(StmtVisitor* visitor);
 	~Print() {}
+};
+
+class ReturnStmt : public Stmt {
+public:
+    Token name;
+    Expr* value;
+
+    ReturnStmt(Token name, Expr* value);
+	void printfunc();
+	std::string accept(StmtVisitor* visitor);
+	~ReturnStmt() {}
 };
 
 class Var : public Stmt {

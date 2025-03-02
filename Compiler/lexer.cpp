@@ -4,7 +4,8 @@
 std::unordered_map<std::string, TokenType> Lexer::reservedWordsMap = {
     {"for", FOR}, {"or", OR}, {"xor", XOR}, {"if", IF}, {"else", ELSE},
     {"return", RETURN}, {"print", PRINT}, {"int", INT}, {"str", STR},
-    {"true", TRUE}, {"false", FALSE}, {"nil",NIL}, {"and", AND}, {"while", WHILE}
+    {"true", TRUE}, {"false", FALSE}, {"nil",NIL}, {"and", AND}, {"while", WHILE}, 
+    {"def", DEF}
 };
 
 std::string Lexer::stripComment(const std::string& line) {
