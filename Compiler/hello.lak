@@ -1,10 +1,8 @@
 def fib(n) {
-   return n*n;
+   if (n > 5) return n*n;
+   else if (n<3) return n*10;
+   else return n * 20 + 1;
 }
 
-#int i = 0;
+print fib(4);
 
-while(i < 10){
-    print fib(i);
-    i = i + 1;
-}

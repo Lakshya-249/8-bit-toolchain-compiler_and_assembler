@@ -210,6 +210,7 @@ try{
     }
     // std::cout<<"Checker value:" <<callee <<std::endl;
     callb->call(this, call->arguments);
+    instructions << "call %" << callee << "\n";
     return "";
 }
 catch(std::runtime_error& e){
@@ -278,8 +279,10 @@ std::string Compiler::visitReturnStmt(ReturnStmt* returnstmt) {
     Expr* expr = nullptr;
     if (returnstmt->value!= nullptr) {
         expr = returnstmt->value;
+        evaluate(expr);
+        instructions << "ret\n";
     }
-    throw Return(expr);
+    // throw Return(expr);
     return "";
 }
 
@@ -314,6 +317,12 @@ std::string Compiler::compile(std::vector<Stmt*> &statements){
     }
     // instructions << "out 0\n";
     instructions << "hlt\n";
+    for(auto &it: funcStatements) {
+        instructions << it.second.second << ":\n";
+        executeBlock(it.first, it.second.first);
+        loadDataRegister('A', "0");
+        instructions << "ret\n";
+    }
     instructions << ".data\n";
     std::unordered_map<std::string, std::string> processedVars;
     for (auto &var : env->values) {
@@ -357,18 +366,18 @@ std::string ASTFunction::call(Compiler* compiler, std::vector<Expr*> arguments) 
         compiler->moveRegisterToMemory('A', environment->get(declaration->params[i]));
     }
     // std::cout<<"Checker value:" <<environment->get(declaration->name) <<std::endl;
-    // compiler->funcStatements.push_back({declaration->body, environment});
-    try
-    {
-        compiler->executeBlock(declaration->body, environment);
-    }
-    catch(const Return& returnException)
-    {
-        compiler->evaluate(returnException.value);
-        compiler->env = prev;
-        return "";
-    }
-    compiler->loadDataRegister('A', "0");
+    compiler->funcStatements.push_back({declaration->body, {environment, environment->get(declaration->name)}});
+    // try
+    // {
+    //     compiler->executeBlock(declaration->body, environment);
+    // }
+    // catch(const Return& returnException)
+    // {
+    //     compiler->evaluate(returnException.value);
+    //     compiler->env = prev;
+    //     return "";
+    // }
+    // compiler->loadDataRegister('A', "0");
     
     return "";
 }
