@@ -208,13 +208,13 @@ out 0
    git clone https://github.com/Lakshya-249/8-bit-toolchain-compiler_and_assembler.git
    cd Compiler
    ```
-2. Build the compiler/interpreter:
+2. Build the compiler:
    ```sh
-   make
+   g++ lexer.cpp token.cpp expr.cpp parser.cpp environment.cpp stmt.cpp ASTAssembly.cpp  main.cpp -o main
    ```
 3. Run a program:
    ```sh
-   ./custom_lang program.txt
+   ./main program.txt
    ```
 
 ---
