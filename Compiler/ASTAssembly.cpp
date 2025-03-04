@@ -196,20 +196,24 @@ std::string Compiler::visitCall(Call* call) {
 try{
     std::string callee = evaluate(call->callee);
     ASTCallable* callb = env->getFunction(callee);
-    // std::vector<std::string>arguments; 
-    // for (auto &arg : call->arguments) {
-    //     arguments.push_back(evaluate(arg));
-    // }
+    std::vector<Expr*>arguments; 
+
+    for (auto &arg : call->arguments) {
+        if (arg != nullptr) arguments.push_back(arg);
+    }
     if(typeid(*callb) != typeid(ASTFunction)){
         throw std::runtime_error("Can only call functions and classes.");
         
     }
-    if (call->arguments.size() > callb->arity() || call->arguments.size() < callb->arity()){
+    if (arguments.size() > callb->arity()){
         throw std::runtime_error("Too many arguments for function.");
-        
+    }
+
+    if( arguments.size() < callb->arity()) {
+        throw std::runtime_error("Too Less arguments for function.");
     }
     // std::cout<<"Checker value:" <<callee <<std::endl;
-    callb->call(this, call->arguments);
+    callb->call(this, arguments);
     instructions << "call %" << callee << "\n";
     return "";
 }

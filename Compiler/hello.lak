@@ -1,8 +1,28 @@
-def fib(n) {
-   if (n > 5) return n*n;
-   else if (n<3) return n*10;
-   else return n * 20 + 1;
+def reverse(a, b){
+    int temp = a;
+    a = b;
+    b = temp;
+    print a;
+    print b;
 }
 
-print fib(4);
+def add(a,b){
+    int temp = a*b + b;
+    return temp;
+}
+
+int a = 10;
+int b = 15;
+print a;
+print b;
+
+
+{
+    reverse(a, b);
+    {
+        int x = add(a,);
+        print x;
+    }
+}
+
 

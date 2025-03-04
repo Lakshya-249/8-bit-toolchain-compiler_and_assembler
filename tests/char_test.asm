@@ -1,27 +1,47 @@
 .text
-mov A M %fib
-ldi A 4
-mov M A %n_local1
-call %fib
+ldi A 10
+mov M A %a
+ldi A 15
+mov M A %b
+mov A M %a
+out 0
+mov A M %b
+out 0
+mov A M %reverse
+mov A M %a
+mov M A %a_local1
+mov A M %b
+mov M A %b_local1
+call %reverse
+mov A M %add
+mov A M %a
+mov M A %a_local1
+mov A M %b
+mov M A %b_local1
+call %add
+mov M A %x_local2
+mov A M %x_local2
 out 0
 hlt
-fib:
-ldi A 5
-push A
-mov A M %n_local1
-pop B
-cmp
-jc %bool0
-ldi A 1
-jmp %endbool0
-bool0:
+reverse:
+mov A M %a_local1
+mov M A %temp_local1
+mov A M %b_local1
+mov M A %a_local1
+mov A M %temp_local1
+mov M A %b_local1
+mov A M %a_local1
+out 0
+mov A M %b_local1
+out 0
 ldi A 0
-endbool0:
-dec
-jc %else0
-mov A M %n_local1
+ret
+add:
+mov A M %b_local1
 push A
-mov A M %n_local1
+mov A M %b_local1
+push A
+mov A M %a_local1
 mov C A
 pop B
 ldi A 0
@@ -35,66 +55,19 @@ dec
 mov C A
 jnz %startM0
 pop A
-ret
-jmp %endif0
-else0:
-mov A M %n_local1
-push A
-ldi A 3
-pop B
-cmp
-jc %bool1
-ldi A 1
-jmp %endbool1
-bool1:
-ldi A 0
-endbool1:
-dec
-jc %else1
-ldi A 10
-push A
-mov A M %n_local1
-mov C A
-pop B
-ldi A 0
-push A
-startM1:
-pop A
-add
-push A
-mov A C
-dec
-mov C A
-jnz %startM1
-pop A
-ret
-jmp %endif1
-else1:
-ldi A 1
-push A
-ldi A 20
-push A
-mov A M %n_local1
-mov C A
-pop B
-ldi A 0
-push A
-startM2:
-pop A
-add
-push A
-mov A C
-dec
-mov C A
-jnz %startM2
-pop A
 pop B
 add
+mov M A %temp_local1
+mov A M %temp_local1
 ret
-endif1:
-endif0:
 ldi A 0
 ret
 .data
-fib=0
-n_local1=0
+b=0
+a=0
+add=0
+reverse=0
+x_local2=0
+temp_local1=0
+b_local1=0
+a_local1=0
