@@ -67,7 +67,7 @@ Expr* Parser::assignment() {
 
 Expr* Parser::orExpr() {
     Expr* expr = andExpr();
-    while (match({OR})){
+    while (match({OR_OP})){
         Token op = previous();
         Expr* right = andExpr();
         expr = new Logical(expr, op, right);
@@ -76,11 +76,41 @@ Expr* Parser::orExpr() {
 }
 
 Expr* Parser::andExpr() {
+    Expr* expr = bitwiseOR();
+    while (match({AND_OP})){
+        Token op = previous();
+        Expr* right = bitwiseOR();
+        expr = new Logical(expr, op, right);
+    }
+    return expr;
+}
+
+Expr* Parser::bitwiseOR() {
+    Expr* expr = bitwiseXOR();
+    while (match({OR})){
+        Token op = previous();
+        Expr* right = bitwiseXOR();
+        expr = new Binary(expr, op, right);
+    }
+    return expr;
+}
+
+Expr* Parser::bitwiseXOR() {
+    Expr* expr = bitwiseAND();
+    while (match({XOR})){
+        Token op = previous();
+        Expr* right = bitwiseAND();
+        expr = new Binary(expr, op, right);
+    }
+    return expr;
+}
+
+Expr* Parser::bitwiseAND() {
     Expr* expr = equality();
     while (match({AND})){
         Token op = previous();
         Expr* right = equality();
-        expr = new Logical(expr, op, right);
+        expr = new Binary(expr, op, right);
     }
     return expr;
 }

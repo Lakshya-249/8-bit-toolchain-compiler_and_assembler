@@ -39,6 +39,9 @@ std::string Compiler::getOpCode(const TokenType &op){
     else if (op == NOT_EQUAL) return "neq";
     else if (op == GREATER_EQUAL) return "gte";
     else if (op == LESS_EQUAL) return "lte";
+    else if (op == AND) return "and";
+    else if (op == OR) return "or";
+    else if (op == XOR) return "xor";
     return "UNKNOWN_OP";
 }
 
@@ -177,7 +180,7 @@ std::string Compiler::visitLogical(Logical* logical) {
     evaluate(logical->left);
     loadDataRegister('B', "1");
     instructions<< "cmp\n";
-    if(logical->op.type == OR) instructions << "jc %orand" << cnt << "\n";
+    if(logical->op.type == OR_OP) instructions << "jc %orand" << cnt << "\n";
     else instructions << "jnc %orand" << cnt << "\n";
     instructions << "jmp %orandEnd" << cnt << "\n";
     instructions << "orand" << cnt << ":\n";

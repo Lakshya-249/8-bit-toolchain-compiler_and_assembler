@@ -22,6 +22,34 @@ call %add
 mov M A %x_local2
 mov A M %x_local2
 out 0
+ldi A 2
+push A
+ldi A 3
+push A
+ldi A 5
+pop B
+and
+pop B
+or
+mov M A %ans
+mov A M %ans
+out 0
+ldi A 0
+ldi B 1
+cmp
+jc %orand1
+jmp %orandEnd1
+orand1:
+ldi A 65
+orandEnd1:
+ldi B 1
+cmp
+jc %orand0
+jmp %orandEnd0
+orand0:
+ldi A 3
+orandEnd0:
+out 0
 hlt
 reverse:
 mov A M %a_local1
@@ -63,6 +91,7 @@ ret
 ldi A 0
 ret
 .data
+ans=0
 b=0
 a=0
 add=0

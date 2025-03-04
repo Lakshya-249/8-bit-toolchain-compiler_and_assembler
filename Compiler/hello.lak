@@ -20,9 +20,13 @@ print b;
 {
     reverse(a, b);
     {
-        int x = add(a,);
+        int x = add(a,b);
         print x;
     }
 }
 
+int ans = 5 & 3 | 2;
+print ans;
+
+print 0 or 65 or 3;
 

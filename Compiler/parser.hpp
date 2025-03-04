@@ -33,6 +33,9 @@ private:
     Expr* primary();
     Expr* orExpr();
     Expr* andExpr();
+    Expr* bitwiseAND();
+    Expr* bitwiseXOR();
+    Expr* bitwiseOR();
     Expr* call();
     Expr* finishCall(Expr* callee);
     std::vector<Stmt*> block();

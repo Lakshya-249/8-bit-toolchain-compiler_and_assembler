@@ -2,10 +2,10 @@
 #include <cctype>
 
 std::unordered_map<std::string, TokenType> Lexer::reservedWordsMap = {
-    {"for", FOR}, {"or", OR}, {"xor", XOR}, {"if", IF}, {"else", ELSE},
+    {"for", FOR}, {"or", OR_OP}, {"if", IF}, {"else", ELSE},
     {"return", RETURN}, {"print", PRINT}, {"int", INT}, {"str", STR},
-    {"true", TRUE}, {"false", FALSE}, {"nil",NIL}, {"and", AND}, {"while", WHILE}, 
-    {"def", DEF}
+    {"true", TRUE}, {"false", FALSE}, {"nil", NIL}, {"and", AND_OP}, {"while", WHILE}, 
+    {"def", DEF}, 
 };
 
 std::string Lexer::stripComment(const std::string& line) {
@@ -72,7 +72,7 @@ std::vector<Token> Lexer::tokenize(std::ifstream& file) {
         for (int i = 0; i < n; i++) {
             char c = line[i];
             
-            if (std::string(",;(){}+-*/><:=!").find(c) != std::string::npos) {
+            if (std::string(",;(){}+-*/><:=!&|^").find(c) != std::string::npos) {
                 if (!currentToken.empty()) {
                     tokens.push_back(checkLiteralOrKeyword(currentToken, lineNumber, i));
                     currentToken.clear();
@@ -89,6 +89,9 @@ std::vector<Token> Lexer::tokenize(std::ifstream& file) {
                 case '-': tokens.push_back(createToken(MINUS,"-",lineNumber,i)); break;
                 case '*': tokens.push_back(createToken(STAR,"*",lineNumber,i)); break;
                 case '/': tokens.push_back(createToken(SLASH,"/",lineNumber,i)); break;
+                case '|': tokens.push_back(createToken(OR,"|",lineNumber,i)); break;
+                case '&': tokens.push_back(createToken(AND,"&",lineNumber,i)); break;
+                case '^': tokens.push_back(createToken(XOR,"^",lineNumber,i)); break;
                 case '>': tokens.push_back(match('=', line[i+1], i) ? createToken(GREATER_EQUAL,">=",lineNumber,i) : 
                         createToken(GREATER,">",lineNumber,i)); break;
                 case '<': tokens.push_back(match('=', line[i+1], i) ? createToken(LESS_EQUAL,"<=",lineNumber,i) : 

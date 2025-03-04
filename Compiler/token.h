@@ -25,6 +25,9 @@ enum TokenType {
     // literal token
     IDENTIFIER,STRING,INTEGER,
 
+    // Additional Conditonals
+    AND_OP, OR_OP,
+
     // KEYWORD token
     AND, OR, XOR, FOR, WHILE, DEF,
     IF, ELSE, RETURN, PRINT, INT, STR,
